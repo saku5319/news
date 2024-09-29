@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自動ニュースサイト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .news-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .news-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .news-item:last-child {
+            border-bottom: none;
+        }
+        .news-title {
+            font-size: 1.2em;
+            color: #007BFF;
+        }
+        .news-description {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>最新ニュース</h1>
+</header>
+
+<div class="news-container" id="news-container">
+    <p>ニュースを読み込み中...</p>
+</div>
+
+<script>
+    async function fetchNews() {
+        const response = await fetch('https://newsapi.org/v2/top-headlines?country=jp&apiKey=a162849a618542cd8b6565cb4d09d40b');
+        const data = await response.json();
+        return data.articles;
+    }
+
+    function displayNews(articles) {
+        const container = document.getElementById('news-container');
+        container.innerHTML = '';
+
+        articles.forEach(article => {
+            const newsItem = document.createElement('div');
+            newsItem.classList.add('news-item');
+
+            const title = document.createElement('h2');
+            title.classList.add('news-title');
+            title.innerHTML = `<a href="${article.url}" target="_blank">${article.title}</a>`;
+            
+            const description = document.createElement('p');
+            description.classList.add('news-description');
+            description.textContent = article.description || '詳細情報はありません。';
+
+            newsItem.appendChild(title);
+            newsItem.appendChild(description);
+            container.appendChild(newsItem);
+        });
+    }
+
+    async function loadNews() {
+        try {
+            const articles = await fetchNews();
+            displayNews(articles);
+        } catch (error) {
+            console.error('ニュースの取得に失敗しました:', error);
+            const container = document.getElementById('news-container');
+            container.innerHTML = '<p>ニュースの取得に失敗しました。もう一度お試しください。</p>';
+        }
+    }
+
+    loadNews();
+</script>
+
+</body>
+</html>
